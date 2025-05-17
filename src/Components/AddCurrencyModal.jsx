@@ -10,7 +10,7 @@ import {supabase} from "../../utils/supabase.js";
 
 export default function AddCurrencyModal(props) {
 
-    const { addCurrencyAlertOpen, setSelectedCurrency, onAddCurrencyAlertClose, getCurrencies } = props;
+    const { addCurrencyAlertOpen, onAddCurrencyAlertClose, getCurrencies } = props;
 
 
     const [currency, setCurrency] = React.useState("");
@@ -35,8 +35,8 @@ export default function AddCurrencyModal(props) {
                 console.error('Insert error:', error)
             } else {
                 console.log('Inserted')
-                getCurrencies();
-                // setSelectedCurrency(); TODO: when creating new curr, to display it
+                getCurrencies("last");
+                // TODO: when creating new curr, to display it
                 onAddCurrencyAlertClose();
                 setCurrency("");
                 setCurrencyName("Savings...");

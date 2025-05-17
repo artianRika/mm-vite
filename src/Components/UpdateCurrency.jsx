@@ -23,7 +23,7 @@ export default function UpdateCurrency(props) {
 
 
     const updateCurrency = async () =>{
-        if(name !== selectedCurrency.currency_name){
+        if(name !== selectedCurrency.currency_name || amount !== selectedCurrency.amount){
             const { data, error } = await supabase
                 .from('Currencies')
                 .update({
@@ -36,7 +36,7 @@ export default function UpdateCurrency(props) {
                 console.error('Update error:', error);
             } else {
                 console.log('Updated successfully:', data);
-                getCurrencies(selectedCurrency.currency_id);// TODO: after edit, the card switches to the first curr
+                getCurrencies(selectedCurrency.currency_id);
                 editAmountClose();
             }
         }

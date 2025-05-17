@@ -86,7 +86,7 @@ const Drawer = styled(MuiDrawer, {
     }),
 }));
 
-export default function MiniDrawerLayout(curr_id = null) {
+export default function MiniDrawerLayout() {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
     const [signOutAlertOpen, setSignOutAlertOpen] = React.useState(false);
@@ -98,8 +98,9 @@ export default function MiniDrawerLayout(curr_id = null) {
     const [currencyList, setCurrencyList] = useState([]);
 
     const [selectedCurrency, setSelectedCurrency] = useState({});
+
     const getCurrencies = async (curr_id = null) => {
-        const { data, error } = await supabase.from("Currencies").select();
+        const { data, error } = await supabase.from("Currencies").select().order('currency_id', { ascending: true });
 
         if (error) {
             console.error('Error fetching currencies:', error);
@@ -112,8 +113,11 @@ export default function MiniDrawerLayout(curr_id = null) {
                     if (index !== -1) {
                         setSelectedCurrency(data[index]);
                     }
+                    if(curr_id === "last"){
+                        setSelectedCurrency(data[data.length - 1])
+                    }
                 } else {
-                    setSelectedCurrency(data[0]);
+                        setSelectedCurrency(data[0]);
                 }
             }
         }

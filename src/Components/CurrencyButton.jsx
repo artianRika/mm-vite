@@ -6,8 +6,13 @@ import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import * as React from "react";
+import DeleteCurrencyDialog from "./DeleteCurrencyDialog.jsx";
 
 const CurrencyButton = (props) =>{
+
+    const [deleteAlertOpen, setDeleteAlertOpen] = React.useState(false);
+
+
     function getCurrencyPath(currency) {
         switch (currency){
             case "MKD":
@@ -42,7 +47,7 @@ const CurrencyButton = (props) =>{
                       backgroundColor: colors.primary,
                   },
               }}
-              // onClick={}
+               onClick={() => {console.log("outter thing")}}
           >
               <ListItemIcon sx={{ minWidth: 0, justifyContent: "center", mr: props.open ? 3 : "auto" }}>
                   <Box
@@ -53,13 +58,37 @@ const CurrencyButton = (props) =>{
                   />
               </ListItemIcon>
 
-              {props.open && <ListItemText primary={props.text} sx={{ flexGrow: 1 }} />}
+              {props.open && <ListItemText
+                  primary={props.text}
+                  sx={{
+                      flexGrow: 1,
+                      overflow: "hidden",
+                      fontSize: ".7rem"
+                    }}
+              />}
 
               {props.open && (
-                  <IconButton sx={{ padding: 0 }}>
+                  <IconButton
+                        sx={{ padding: 0 }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setDeleteAlertOpen(true)
+                            }
+                        }
+                  >
                       <MoreVertIcon />
                   </IconButton>
+
               )}
+                  <DeleteCurrencyDialog
+                  alertOpen={deleteAlertOpen}
+                    onAlertClose={
+                  (e) => {
+                      e.stopPropagation()
+                      setDeleteAlertOpen(false)
+                  }
+              }
+          />
           </ListItemButton>
     );
 }
