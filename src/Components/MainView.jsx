@@ -1,18 +1,17 @@
 import BalanceCard from "./BalanceCard.jsx";
-import React, {useEffect, useState} from "react";
+import React from "react";
 
 const MainView = (props) =>{
-    const { currencyId, currencyName } = props;
-    const [amount, setAmount] = useState(0);
+    const { selectedCurrency, getCurrencies } = props;
 
-    useEffect(() => {
-        //get amount by currencyId
-        // setAmount...
-    }, []);
+    const isCurrencySelected =
+        selectedCurrency && Object.keys(selectedCurrency).length > 0;
 
     return (
         <div>
-            <BalanceCard name={currencyName} amount={amount} currency={"мкд"} />
+            {
+                isCurrencySelected && <BalanceCard getCurrencies={getCurrencies} selectedCurrency={selectedCurrency} />
+            }
         </div>
     );
 }

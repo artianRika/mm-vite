@@ -17,7 +17,8 @@ import ControlButton from "./ControlButton.jsx";
 import LogoutDialog from "./LogoutDialog.jsx";
 import MainView from "./MainView.jsx";
 import AddCurrencyModal from "./AddCurrencyModal.jsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {supabase} from "../../utils/supabase.js";
 
 const drawerWidth = 240;
 
@@ -85,7 +86,7 @@ const Drawer = styled(MuiDrawer, {
     }),
 }));
 
-export default function MiniDrawerLayout() {
+export default function MiniDrawerLayout(curr_id = null) {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
     const [signOutAlertOpen, setSignOutAlertOpen] = React.useState(false);
@@ -94,8 +95,33 @@ export default function MiniDrawerLayout() {
     const handleDrawerOpen = () => setOpen(true);
     const handleDrawerClose = () => setOpen(false);
 
-    const [selectedCurrencyId, setSelectedCurrencyId] = useState(0);
-    const [selectedCurrencyName, setSelectedCurrencyName] = useState("Denars...");
+    const [currencyList, setCurrencyList] = useState([]);
+
+    const [selectedCurrency, setSelectedCurrency] = useState({});
+    const getCurrencies = async (curr_id = null) => {
+        const { data, error } = await supabase.from("Currencies").select();
+
+        if (error) {
+            console.error('Error fetching currencies:', error);
+        } else {
+            setCurrencyList(data);
+
+            if (data.length > 0) {
+                if (curr_id !== null) {
+                    const index = data.findIndex(item => item.currency_id === curr_id);
+                    if (index !== -1) {
+                        setSelectedCurrency(data[index]);
+                    }
+                } else {
+                    setSelectedCurrency(data[0]);
+                }
+            }
+        }
+    };
+
+    useEffect(() => {
+        getCurrencies()
+    }, [])
 
 
     return (
@@ -172,9 +198,13 @@ export default function MiniDrawerLayout() {
                     }}
                 >
                     <List>
-                        {["Dollar", "Euro"].map((text) => (
-                            <ListItem key={text} sx={{ display: "flex", alignItems: "center" }}>
-                                <CurrencyButton text={text} open={open} currency="MKD" />
+                        {currencyList.map((currency) => (
+                            <ListItem
+                                key={currency.currency_id}
+                                sx={{ display: "flex", alignItems: "center" }}
+                                onClick={() => setSelectedCurrency(currency)}
+                            >
+                                <CurrencyButton text={currency.currency_name} open={open} currency={currency.currency} />
                             </ListItem>
                         ))}
                         <ListItemButton
@@ -201,7 +231,13 @@ export default function MiniDrawerLayout() {
                             </ListItemIcon>
                             {open && <ListItemText primary="Add currency" sx={{ flexGrow: 1 }} />}
                         </ListItemButton>
-                            <AddCurrencyModal addCurrencyAlertOpen={addCurrencyAlertOpen} onAddCurrencyAlertClose={() => setAddCurrencyAlertOpen(false)} />
+                            <AddCurrencyModal
+                                getCurrencies={getCurrencies}
+                                currencyList={currencyList}
+                                setSelectedCurrency={setSelectedCurrency}
+                                setCurrencyList={setCurrencyList}
+                                addCurrencyAlertOpen={addCurrencyAlertOpen}
+                                onAddCurrencyAlertClose={() => setAddCurrencyAlertOpen(false)} />
                     </List>
                 </Box>
 
@@ -222,7 +258,7 @@ export default function MiniDrawerLayout() {
 
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
-                {<MainView currencyId={selectedCurrencyId} currencyName={selectedCurrencyName} />}
+                <MainView getCurrencies={getCurrencies} selectedCurrency={selectedCurrency} />
             </Box>
         </Box>
     );

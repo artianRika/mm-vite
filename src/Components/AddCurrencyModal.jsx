@@ -6,17 +6,44 @@ import DialogTitle from '@mui/material/DialogTitle';
 import colors from "../colors.js";
 import {DialogContent, FormControl, InputLabel, MenuItem, OutlinedInput, Select, TextField} from "@mui/material";
 import Box from "@mui/material/Box";
+import {supabase} from "../../utils/supabase.js";
 
 export default function AddCurrencyModal(props) {
 
-    const { addCurrencyAlertOpen, onAddCurrencyAlertClose } = props;
+    const { addCurrencyAlertOpen, setSelectedCurrency, onAddCurrencyAlertClose, getCurrencies } = props;
 
 
     const [currency, setCurrency] = React.useState("");
     const [currencyName, setCurrencyName] = React.useState("Savings...");
+    const [amount, setAmount] = React.useState(0);
 
-    const handleChange = (e) => {
-        setCurrency(e.target.value);
+
+    const addCurrency = async () => {
+        if(currency !== "") {
+            const {data, error} = await supabase
+                .from('Currencies')
+                .insert([
+                    {
+                        user_id: "3bf91472-8ad5-4e00-aa6e-90f1b28ff841",
+                        amount: amount,
+                        currency: currency,
+                        currency_name: currencyName,
+                    }
+                ])
+
+            if (error) {
+                console.error('Insert error:', error)
+            } else {
+                console.log('Inserted')
+                getCurrencies();
+                // setSelectedCurrency(); TODO: when creating new curr, to display it
+                onAddCurrencyAlertClose();
+                setCurrency("");
+                setCurrencyName("Savings...");
+                setAmount(0);
+            }
+        }
+
     }
 
     return (
@@ -43,7 +70,7 @@ export default function AddCurrencyModal(props) {
                         <Select
                          variant={"outlined"}
                          value={currency}
-                         onChange={e => handleChange(e)}
+                         onChange={e => setCurrency(e.target.value)}
                          input={<OutlinedInput label="Currency" id="demo-dialog-native" />}
                         >
                             <MenuItem value={"MKD"}>MKD</MenuItem>
@@ -60,12 +87,21 @@ export default function AddCurrencyModal(props) {
                         defaultValue={currencyName}
                         onChange={e => setCurrencyName(e.target.value)}
                     />
+
+                    <TextField
+                        id="outlined-uncontrolled"
+                        label="Amount"
+                        defaultValue={amount}
+                        onChange={e => setAmount(Number(e.target.value))}
+                    />
                 </Box>
             </DialogContent>
 
             <DialogActions>
                 <Button sx={{fontSize: ".8rem"}} onClick={onAddCurrencyAlertClose} color="#000">Cancel</Button>
-                <Button variant="contained" onClick={() => { console.log(currencyName, currency);}}
+                <Button variant="contained" onClick={() => {
+                    addCurrency();
+                }}
                         sx={{backgroundColor: colors.primary,
                             color: "black",
                             fontSize: ".8rem",
