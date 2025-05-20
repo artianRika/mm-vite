@@ -11,7 +11,9 @@ import DeleteCurrencyDialog from "./DeleteCurrencyDialog.jsx";
 const CurrencyButton = (props) =>{
 
     const [deleteAlertOpen, setDeleteAlertOpen] = React.useState(false);
+    const [currencyToDelete, setCurrencyToDelete] = React.useState(null);
 
+    const { currencyObj, selectedCurrency, setSelectedCurrency, getCurrencies } = props;
 
     function getCurrencyPath(currency) {
         switch (currency){
@@ -47,19 +49,19 @@ const CurrencyButton = (props) =>{
                       backgroundColor: colors.primary,
                   },
               }}
-               onClick={() => {console.log("outter thing")}}
+              onClick={() => setSelectedCurrency(currencyObj)}
           >
               <ListItemIcon sx={{ minWidth: 0, justifyContent: "center", mr: props.open ? 3 : "auto" }}>
                   <Box
                       component="img"
-                      src={getCurrencyPath(props.currency)}
+                      src={getCurrencyPath(currencyObj.currency)}
                       alt="Currency"
                       sx={{ width: "20px", height: "auto", objectFit: "contain" }}
                   />
               </ListItemIcon>
 
               {props.open && <ListItemText
-                  primary={props.text}
+                  primary={currencyObj.currency_name}
                   sx={{
                       flexGrow: 1,
                       overflow: "hidden",
@@ -72,6 +74,7 @@ const CurrencyButton = (props) =>{
                         sx={{ padding: 0 }}
                         onClick={(e) => {
                             e.stopPropagation();
+                            setCurrencyToDelete(currencyObj);
                             setDeleteAlertOpen(true)
                             }
                         }
@@ -81,12 +84,18 @@ const CurrencyButton = (props) =>{
 
               )}
                   <DeleteCurrencyDialog
+                    currencyToDelete={currencyToDelete}
+                    selectedCurrency={selectedCurrency}
+                    setSelectedCurrency={setSelectedCurrency}
+                    getCurrencies={getCurrencies}
                   alertOpen={deleteAlertOpen}
                     onAlertClose={
-                  (e) => {
-                      e.stopPropagation()
-                      setDeleteAlertOpen(false)
-                  }
+                    (e) => {
+                        if (e && e.stopPropagation) {
+                            e.stopPropagation();
+                        }
+                        setDeleteAlertOpen(false);
+                    }
               }
           />
           </ListItemButton>

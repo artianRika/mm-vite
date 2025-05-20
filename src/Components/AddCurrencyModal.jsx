@@ -36,7 +36,6 @@ export default function AddCurrencyModal(props) {
             } else {
                 console.log('Inserted')
                 getCurrencies("last");
-                // TODO: when creating new curr, to display it
                 onAddCurrencyAlertClose();
                 setCurrency("");
                 setCurrencyName("Savings...");

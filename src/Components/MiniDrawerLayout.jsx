@@ -183,6 +183,7 @@ export default function MiniDrawerLayout() {
                                 }}
                             >
                                 Artian Rika
+                                {/*//TODO: get user Name*/}
                             </Typography>
                         </Box>
                     )}
@@ -206,9 +207,8 @@ export default function MiniDrawerLayout() {
                             <ListItem
                                 key={currency.currency_id}
                                 sx={{ display: "flex", alignItems: "center" }}
-                                onClick={() => setSelectedCurrency(currency)}
                             >
-                                <CurrencyButton text={currency.currency_name} open={open} currency={currency.currency} />
+                                <CurrencyButton currencyObj={currency} getCurrencies={getCurrencies} selectedCurrency={selectedCurrency} setSelectedCurrency={setSelectedCurrency} open={open} />
                             </ListItem>
                         ))}
                         <ListItemButton
