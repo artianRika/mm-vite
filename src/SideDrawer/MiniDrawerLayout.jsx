@@ -1,9 +1,18 @@
 import * as React from 'react';
-import { styled, useTheme } from '@mui/material/styles';
+import {useContext} from 'react';
+import {useTheme} from '@mui/material/styles';
 import {
-    Box, Drawer as MuiDrawer, AppBar as MuiAppBar, Toolbar, List, CssBaseline,
-    Typography, IconButton, ListItem, ListItemButton, ListItemIcon,
-    ListItemText, Avatar
+    Avatar,
+    Box,
+    CssBaseline,
+    IconButton,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    Toolbar,
+    Typography
 } from '@mui/material';
 
 import MenuIcon from '@mui/icons-material/Menu';
@@ -12,79 +21,15 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AddIcon from '@mui/icons-material/Add';
 
 import colors from "../colors.js";
-import CurrencyButton from "./CurrencyButton.jsx";
-import ControlButton from "./ControlButton.jsx";
-import LogoutDialog from "./LogoutDialog.jsx";
-import MainView from "./MainView.jsx";
-import AddCurrencyModal from "./AddCurrencyModal.jsx";
-import {useEffect, useState} from "react";
-import {supabase} from "../../utils/supabase.js";
+import CurrencyButton from "../Components/CurrencyButton.jsx";
+import ControlButton from "../Components/ControlButton.jsx";
+import LogoutDialog from "../Dialogs/LogoutDialog.jsx";
+import MainView from "../Components/MainView.jsx";
+import AddCurrencyDialog from "../Dialogs/AddCurrencyDialog.jsx";
+import {CurrencyContext} from "../Context/CurrencyContext.jsx";
 
-const drawerWidth = 240;
+import {AppBar, Drawer, DrawerHeader} from './DrawerDependencies.jsx';
 
-const openedMixin = (theme) => ({
-    width: drawerWidth,
-    transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-    }),
-    overflowX: 'hidden',
-});
-
-const closedMixin = (theme) => ({
-    transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: 'hidden',
-    width: `calc(${theme.spacing(7)} + 1px)`,
-    [theme.breakpoints.up('sm')]: {
-        width: `calc(${theme.spacing(8)} + 1px)`,
-    },
-});
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-}));
-
-const AppBar = styled(MuiAppBar, {
-    shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(['width', 'margin'], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-    }),
-    ...(open && {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-    }),
-}));
-
-const Drawer = styled(MuiDrawer, {
-    shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    ...(open && {
-        ...openedMixin(theme),
-        '& .MuiDrawer-paper': openedMixin(theme),
-    }),
-    ...(!open && {
-        ...closedMixin(theme),
-        '& .MuiDrawer-paper': closedMixin(theme),
-    }),
-}));
 
 export default function MiniDrawerLayout() {
     const theme = useTheme();
@@ -95,38 +40,7 @@ export default function MiniDrawerLayout() {
     const handleDrawerOpen = () => setOpen(true);
     const handleDrawerClose = () => setOpen(false);
 
-    const [currencyList, setCurrencyList] = useState([]);
-
-    const [selectedCurrency, setSelectedCurrency] = useState({});
-
-    const getCurrencies = async (curr_id = null) => {
-        const { data, error } = await supabase.from("Currencies").select().order('currency_id', { ascending: true });
-
-        if (error) {
-            console.error('Error fetching currencies:', error);
-        } else {
-            setCurrencyList(data);
-
-            if (data.length > 0) {
-                if (curr_id !== null) {
-                    const index = data.findIndex(item => item.currency_id === curr_id);
-                    if (index !== -1) {
-                        setSelectedCurrency(data[index]);
-                    }
-                    if(curr_id === "last"){
-                        setSelectedCurrency(data[data.length - 1])
-                    }
-                } else {
-                        setSelectedCurrency(data[0]);
-                }
-            }
-        }
-    };
-
-    useEffect(() => {
-        getCurrencies()
-    }, [])
-
+    const { currencyList } = useContext(CurrencyContext);
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -208,7 +122,7 @@ export default function MiniDrawerLayout() {
                                 key={currency.currency_id}
                                 sx={{ display: "flex", alignItems: "center" }}
                             >
-                                <CurrencyButton currencyObj={currency} getCurrencies={getCurrencies} selectedCurrency={selectedCurrency} setSelectedCurrency={setSelectedCurrency} open={open} />
+                                <CurrencyButton currencyObj={currency} open={open} />
                             </ListItem>
                         ))}
                         <ListItemButton
@@ -235,11 +149,7 @@ export default function MiniDrawerLayout() {
                             </ListItemIcon>
                             {open && <ListItemText primary="Add currency" sx={{ flexGrow: 1 }} />}
                         </ListItemButton>
-                            <AddCurrencyModal
-                                getCurrencies={getCurrencies}
-                                currencyList={currencyList}
-                                setSelectedCurrency={setSelectedCurrency}
-                                setCurrencyList={setCurrencyList}
+                            <AddCurrencyDialog
                                 addCurrencyAlertOpen={addCurrencyAlertOpen}
                                 onAddCurrencyAlertClose={() => setAddCurrencyAlertOpen(false)} />
                     </List>
@@ -262,7 +172,7 @@ export default function MiniDrawerLayout() {
 
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
-                <MainView getCurrencies={getCurrencies} selectedCurrency={selectedCurrency} />
+                <MainView />
             </Box>
         </Box>
     );

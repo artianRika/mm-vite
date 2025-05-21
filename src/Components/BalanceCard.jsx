@@ -1,11 +1,13 @@
 import {AddCircleOutline, Edit, RemoveCircleOutline} from "@mui/icons-material";
 import {Button} from "@mui/material";
 import * as React from "react";
-import UpdateCurrency from "./UpdateCurrency.jsx";
+import UpdateCurrencyDialog from "../Dialogs/UpdateCurrencyDialog.jsx";
+import {CurrencyContext} from "../Context/CurrencyContext.jsx";
+import {useContext} from "react";
 
-const BalanceCard = (props) =>{
+const BalanceCard = () =>{
 
-    const { selectedCurrency, getCurrencies } = props;
+    const { selectedCurrency } = useContext(CurrencyContext);
 
     const [editAmountAlertOpen, setEditAmountAlertOpen] = React.useState(false);
 
@@ -20,7 +22,7 @@ const BalanceCard = (props) =>{
                         <Button color={"#000"} onClick={() => setEditAmountAlertOpen(true)}>
                             <Edit/>
                         </Button>
-                        <UpdateCurrency selectedCurrency={selectedCurrency} getCurrencies={getCurrencies} editAmountAlertOpen={editAmountAlertOpen} editAmountClose={() => setEditAmountAlertOpen(false)} />
+                        <UpdateCurrencyDialog editAmountAlertOpen={editAmountAlertOpen} editAmountClose={() => setEditAmountAlertOpen(false)} />
                     </div>
                 </div>
 

@@ -5,10 +5,14 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import colors from "../colors.js";
 import {supabase} from "../../utils/supabase.js";
+import {useContext} from "react";
+import {CurrencyContext} from "../Context/CurrencyContext.jsx";
 
 export default function DeleteCurrencyDialog(props) {
 
-    const { alertOpen, onAlertClose, currencyToDelete, getCurrencies } = props;
+    const { alertOpen, onAlertClose, currencyToDelete } = props;
+    const { getCurrencies } = useContext(CurrencyContext)
+
 
     const handleDelete = async () => {
         if (!currencyToDelete) return;
@@ -22,10 +26,6 @@ export default function DeleteCurrencyDialog(props) {
             console.error('Error deleting currency:', error.message);
         } else {
             await getCurrencies();
-
-            // setSelectedCurrency((prev) =>
-            //     prev?.currency_id === currencyToDelete.currency_id ? null : prev
-            // );
         }
 
         onAlertClose();

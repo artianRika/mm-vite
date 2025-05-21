@@ -7,10 +7,13 @@ import colors from "../colors.js";
 import {DialogContent, FormControl, InputLabel, MenuItem, OutlinedInput, Select, TextField} from "@mui/material";
 import Box from "@mui/material/Box";
 import {supabase} from "../../utils/supabase.js";
+import {useContext} from "react";
+import {CurrencyContext} from "../Context/CurrencyContext.jsx";
 
-export default function AddCurrencyModal(props) {
+export default function AddCurrencyDialog(props) {
 
-    const { addCurrencyAlertOpen, onAddCurrencyAlertClose, getCurrencies } = props;
+    const { addCurrencyAlertOpen, onAddCurrencyAlertClose } = props;
+    const { getCurrencies } = useContext(CurrencyContext)
 
 
     const [currency, setCurrency] = React.useState("");

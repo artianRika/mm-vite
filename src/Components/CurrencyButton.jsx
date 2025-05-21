@@ -6,14 +6,18 @@ import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import * as React from "react";
-import DeleteCurrencyDialog from "./DeleteCurrencyDialog.jsx";
+import DeleteCurrencyDialog from "../Dialogs/DeleteCurrencyDialog.jsx";
+import {useContext} from "react";
+import {CurrencyContext} from "../Context/CurrencyContext.jsx";
 
 const CurrencyButton = (props) =>{
+
+    const { currencyObj } = props;
+    const { setSelectedCurrency } = useContext(CurrencyContext)
 
     const [deleteAlertOpen, setDeleteAlertOpen] = React.useState(false);
     const [currencyToDelete, setCurrencyToDelete] = React.useState(null);
 
-    const { currencyObj, selectedCurrency, setSelectedCurrency, getCurrencies } = props;
 
     function getCurrencyPath(currency) {
         switch (currency){
@@ -85,10 +89,7 @@ const CurrencyButton = (props) =>{
               )}
                   <DeleteCurrencyDialog
                     currencyToDelete={currencyToDelete}
-                    selectedCurrency={selectedCurrency}
-                    setSelectedCurrency={setSelectedCurrency}
-                    getCurrencies={getCurrencies}
-                  alertOpen={deleteAlertOpen}
+                    alertOpen={deleteAlertOpen}
                     onAlertClose={
                     (e) => {
                         if (e && e.stopPropagation) {

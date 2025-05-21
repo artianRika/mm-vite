@@ -1,5 +1,5 @@
 import React from 'react';
-import MiniDrawerLayout from './Components/MiniDrawerLayout.jsx';
+import MiniDrawerLayout from './SideDrawer/MiniDrawerLayout.jsx';
 
 function App() {
     return (

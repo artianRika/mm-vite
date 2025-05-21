@@ -1,17 +1,38 @@
 import BalanceCard from "./BalanceCard.jsx";
-import React from "react";
+import React, {useContext, useEffect, useState} from "react";
+import {CurrencyContext} from "../Context/CurrencyContext.jsx";
+import {supabase} from "../../utils/supabase.js";
+import TransactionsTable from "./TransactionsTable.jsx";
 
-const MainView = (props) =>{
-    const { selectedCurrency, getCurrencies } = props;
+const MainView = () =>{
+    const { currencyList } = useContext(CurrencyContext)
 
-    const isCurrencySelected =
-        selectedCurrency && Object.keys(selectedCurrency).length > 0;
+    const [user, setUser] = useState({});
+
+    async function fetchUser() {
+        const { data, error } = await supabase.auth.getUser();
+        if (error) {
+            console.error('Error fetching user:', error.message);
+        } else {
+            setUser(data.user);
+        }
+    }
+
+    useEffect(() => {
+        // fetchUser();
+    }, []);
+
+    const listNotNull =
+        currencyList.length > 0
 
     return (
         <div>
             {
-                isCurrencySelected && <BalanceCard getCurrencies={getCurrencies} selectedCurrency={selectedCurrency} />
+                listNotNull && <BalanceCard/>
             }
+            <div style={{padding: "0 8rem"}}>
+                <TransactionsTable/>
+            </div>
         </div>
     );
 }
