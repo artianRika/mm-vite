@@ -55,10 +55,11 @@ export default function DeleteCurrencyDialog(props) {
                             handleDelete()
                         }
                         }
-                        sx={{color: colors.red,
+                        sx={{
+                            color: colors.red,
                             border: `1.3px solid ${colors.red}`,
                             fontSize: ".8rem",
-                            borderSize: 4}}
+                        }}
                 >
                     Delete
                 </Button>

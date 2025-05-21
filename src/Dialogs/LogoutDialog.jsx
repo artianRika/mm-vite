@@ -23,10 +23,11 @@ export default function LogoutDialog(props) {
             <DialogActions>
                 <Button sx={{fontSize: ".8rem"}} onClick={onAlertClose} color="#000">Cancel</Button>
                 <Button variant="outlined" onClick={() => { console.log("User logged out");}}
-                        sx={{color: colors.red,
+                        sx={{
+                            color: colors.red,
                             border: `1.3px solid ${colors.red}`,
                             fontSize: ".8rem",
-                            borderSize: 4}}
+                        }}
                 >
                     Sign Out
                 </Button>
