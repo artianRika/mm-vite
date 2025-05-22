@@ -14,9 +14,10 @@ import moment from "moment";
 import colors from "@/colors.js";
 
 
-export default function TransactionsTable() {
+export default function TransactionsTable(props) {
 
     const { selectedCurrency } = useContext(CurrencyContext)
+    const { fromDate, toDate } = props;
 
     const [rows, setRows] = useState([])
     const [transactions, setTransactions] = useState({})
@@ -34,17 +35,21 @@ export default function TransactionsTable() {
                 )
               `)
             .eq('currency_id', selectedCurrency.currency_id)
-            .eq('Currencies.user_id', '3bf91472-8ad5-4e00-aa6e-90f1b28ff841');
+            .eq('Currencies.user_id', '3bf91472-8ad5-4e00-aa6e-90f1b28ff841')
+            .gte('created_at', fromDate.toISOString())
+            .lte('created_at', toDate.clone().endOf('day').toISOString())
+            .order('created_at', { ascending: true });
 
-        if(error) console.log("error fetching the trans..")
+        if(error) {
+            console.log("error fetching the trans..")
+        }
         else{
             setTransactions(data)
-            console.log(data)
         }
     }
     useEffect(() => {
         getTransactions()
-    }, [selectedCurrency]);
+    }, [selectedCurrency, fromDate, toDate]);
 
     useEffect(() => {
         function createTransaction(date, name, amount, type) {
@@ -79,7 +84,9 @@ export default function TransactionsTable() {
             <TableContainer>
                 <Table aria-label="transactions" size="small">
                     <TableBody>
-                        {rows.map((row, index) => (
+                        {rows
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((row, index) => (
                             <TableRow
                                 key={index}
                                 sx={{

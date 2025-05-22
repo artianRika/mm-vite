@@ -3,13 +3,15 @@ import {Button} from "@mui/material";
 import * as React from "react";
 import UpdateCurrencyDialog from "../Dialogs/UpdateCurrencyDialog.jsx";
 import {CurrencyContext} from "../Context/CurrencyContext.jsx";
-import {useContext} from "react";
+import {useContext, useState} from "react";
+import AddTransactionDialog from "@/Dialogs/AddTransactionDialog.jsx";
 
 const BalanceCard = () =>{
 
     const { selectedCurrency } = useContext(CurrencyContext);
 
     const [editAmountAlertOpen, setEditAmountAlertOpen] = React.useState(false);
+    const [addTransactionAlertOpen, setTransactionAlertOpen] = React.useState(false);
 
     return (
         <div className={"flex justify-center"}>
@@ -30,12 +32,25 @@ const BalanceCard = () =>{
                 <div className="font-semibold text-4xl py-10">{selectedCurrency.amount}{selectedCurrency.currency}</div>
 
                 <div className="flex gap-4">
-                    <Button color={"#000"}>
+                    <Button
+                        color={"#000"}
+                        onClick={() => {
+                            setTransactionAlertOpen(true)
+                        }
+                    }>
                         <AddCircleOutline sx={{fontSize: 40}}/>
                     </Button>
-                    <Button color={"#000"}>
+
+                    <Button
+                        color={"#000"}
+                        onClick={() => {
+                            setTransactionAlertOpen(true)
+                        }
+                    }>
                         <RemoveCircleOutline sx={{fontSize: 40}}/>
                     </Button>
+
+                    <AddTransactionDialog type={type} addTransactionAlertOpen={addTransactionAlertOpen} addTransactionAlertClose={() => setTransactionAlertOpen(false)}/>
                 </div>
             </div>
         </div>

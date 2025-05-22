@@ -17,8 +17,6 @@ const MainView = () =>{
     const [toDate, setToDate] = React.useState(moment());
 
 
-
-
     async function fetchUser() {
         const { data, error } = await supabase.auth.getUser();
         if (error) {
@@ -46,7 +44,7 @@ const MainView = () =>{
                     <div className={"flex gap-2"}>
                         <DatePicker
                             sx={{
-                                width: "200px"
+                                width: "10vw"
                             }}
                             label="From"
                             value={fromDate}
@@ -54,11 +52,15 @@ const MainView = () =>{
                         />
                         <DatePicker
                             sx={{
-                                width: "200px"
+                                width: "10vw"
                             }}
                             label="То"
                             value={toDate}
-                            onChange={(newValue) => setToDate(newValue)}
+                            onChange={(newValue) => {
+                                if (newValue && fromDate && newValue.isSameOrAfter(fromDate)) {
+                                    setToDate(newValue);
+                                }
+                            }}
                         />
                     </div>
                     <div className={"ml-auto"}>
@@ -74,7 +76,7 @@ const MainView = () =>{
                     </div>
                 </div>
 
-                    <TransactionsTable/>
+                    <TransactionsTable fromDate={fromDate} toDate={toDate}/>
             </div>
         </div>
     );
