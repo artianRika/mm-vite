@@ -10,8 +10,9 @@ const BalanceCard = () =>{
 
     const { selectedCurrency } = useContext(CurrencyContext);
 
-    const [editAmountAlertOpen, setEditAmountAlertOpen] = React.useState(false);
-    const [addTransactionAlertOpen, setTransactionAlertOpen] = React.useState(false);
+    const [editAmountAlertOpen, setEditAmountAlertOpen] = useState(false);
+    const [addTransactionAlertOpen, setTransactionAlertOpen] = useState(false);
+    const [type, setType] = useState("Expense");
 
     return (
         <div className={"flex justify-center"}>
@@ -35,6 +36,7 @@ const BalanceCard = () =>{
                     <Button
                         color={"#000"}
                         onClick={() => {
+                            setType("Income")
                             setTransactionAlertOpen(true)
                         }
                     }>
@@ -44,13 +46,14 @@ const BalanceCard = () =>{
                     <Button
                         color={"#000"}
                         onClick={() => {
+                            setType("Expense")
                             setTransactionAlertOpen(true)
                         }
                     }>
                         <RemoveCircleOutline sx={{fontSize: 40}}/>
                     </Button>
 
-                    <AddTransactionDialog type={type} addTransactionAlertOpen={addTransactionAlertOpen} addTransactionAlertClose={() => setTransactionAlertOpen(false)}/>
+                    <AddTransactionDialog type={type} setType={setType} addTransactionAlertOpen={addTransactionAlertOpen} addTransactionAlertClose={() => setTransactionAlertOpen(false)}/>
                 </div>
             </div>
         </div>

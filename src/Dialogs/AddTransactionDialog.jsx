@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -9,41 +9,48 @@ import {DialogContent, FormControl, InputLabel, MenuItem, OutlinedInput, Select,
 import Box from "@mui/material/Box";
 import moment from "moment";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
+import {supabase} from "../../utils/supabase.js";
+import {CurrencyContext} from "@/Context/CurrencyContext.jsx";
+import {TransactionsContext} from "@/Context/TransactionsContext.jsx";
 
 export default function AddTransactionDialog(props) {
 
-    const { addTransactionAlertOpen, addTransactionAlertClose } = props;
+    const { addTransactionAlertOpen, addTransactionAlertClose, type, setType } = props;
 
     const [date, setDate] = useState(moment());
     const [description, setDescription] = useState('')
     const [amount, setAmount] = useState(0);
-    const [type, setType] = useState("");
+
+    const { selectedCurrency, updateCurrency } = useContext(CurrencyContext)
+    const { getTransactions } = useContext(TransactionsContext)
 
 
     const addTransaction = async () => {
-        // if(currency !== "") {
-        //     const {data, error} = await supabase
-        //         .from('Currencies')
-        //         .insert([
-        //             {
-        //                 user_id: "3bf91472-8ad5-4e00-aa6e-90f1b28ff841",
-        //                 amount: amount,
-        //                 currency: currency,
-        //                 currency_name: currencyName,
-        //             }
-        //         ])
-        //
-        //     if (error) {
-        //         console.error('Insert error:', error)
-        //     } else {
-        //         console.log('Inserted')
-        //         getCurrencies("last");
-        //         onAddCurrencyAlertClose();
-        //         setCurrency("");
-        //         setCurrencyName("Savings...");
-        //         setAmount(0);
-        //     }
-        // }
+        if(description !== "") {
+            const {data, error} = await supabase
+                .from('Transactions')
+                .insert([
+                    {
+                        currency_id: selectedCurrency.currency_id,
+                        transaction_amount: amount,
+                        description: description,
+                        created_at: date,
+                        transaction_type: type
+                    }
+                ])
+
+            if (error) {
+                console.error('Transaction insert error:', error)
+            } else {
+                console.log('Transaction inserted')
+                getTransactions();
+                addTransactionAlertClose();
+                setDescription("");
+                setDate(moment())
+                updateCurrency(amount, type);
+                setAmount(0);
+            }
+        }
 
     }
 
@@ -76,7 +83,6 @@ export default function AddTransactionDialog(props) {
                         >
                             <MenuItem value={"Income"}>Income</MenuItem>
                             <MenuItem value={"Expense"}>Expense</MenuItem>
-                            <MenuItem value={"Card"}>Card</MenuItem>
                         </Select>
                     </FormControl>
 
@@ -96,8 +102,8 @@ export default function AddTransactionDialog(props) {
 
                     <DatePicker
                         label="Date"
-                        // value={fromDate}
-                        // onChange={(newValue) => setFromDate(newValue)}
+                        value={date}
+                        onChange={(newValue) => setDate(newValue)}
                     />
 
                 </Box>

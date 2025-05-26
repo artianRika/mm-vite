@@ -5,16 +5,15 @@ import {supabase} from "../../utils/supabase.js";
 import TransactionsTable from "./TransactionsTable.jsx";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import Button from "@mui/material/Button";
-import moment from "moment";
+import {TransactionsContext} from "@/Context/TransactionsContext.jsx";
 
 const MainView = () =>{
-    const { currencyList } = useContext(CurrencyContext)
 
     const [user, setUser] = useState({});
 
+    const { currencyList } = useContext(CurrencyContext)
+    const { fromDate, setFromDate, toDate, setToDate } = useContext(TransactionsContext)
 
-    const [fromDate, setFromDate] = React.useState(moment().startOf('month'));
-    const [toDate, setToDate] = React.useState(moment());
 
 
     async function fetchUser() {

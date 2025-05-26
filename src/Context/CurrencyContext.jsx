@@ -8,6 +8,21 @@ export const CurrencyProvider = ({ children }) => {
     const [currencyList, setCurrencyList] = useState([]);
     const [selectedCurrency, setSelectedCurrency] = useState({});
 
+    const [name, setName] = useState(selectedCurrency.currency_name);
+    const [amount, setAmount] = useState(selectedCurrency.amount);
+
+
+    useEffect(() => {
+        getCurrencies()
+    }, [])
+
+    useEffect(() => {
+        if (selectedCurrency) {
+            setName(selectedCurrency.currency_name || "");
+            setAmount(selectedCurrency.amount || 0);
+        }
+    }, [selectedCurrency]);
+
 
     const getCurrencies = async (curr_id = null) => {
         const { data, error } = await supabase.from("Currencies").select().order('currency_id', { ascending: true });
@@ -33,9 +48,33 @@ export const CurrencyProvider = ({ children }) => {
         }
     };
 
-    useEffect(() => {
-        getCurrencies()
-    }, [])
+
+    const updateCurrency = async (transAmount = 0, transType=null) =>{
+        let newAmount = amount;
+        if(transType !== null){
+            if(transType === "Income")
+                newAmount += transAmount;
+            else
+                newAmount -= transAmount;
+        }
+
+        if(name !== selectedCurrency.currency_name || (newAmount) !== selectedCurrency.amount){
+            const { data, error } = await supabase
+                .from('Currencies')
+                .update({
+                    amount: newAmount,
+                    currency_name: name,
+                })
+                .eq('currency_id', selectedCurrency.currency_id);
+
+            if (error) {
+                console.error('Update error:', error);
+            } else {
+                console.log('Updated successfully:', data);
+                getCurrencies(selectedCurrency.currency_id);
+            }
+        }
+    }
 
     return (
         <CurrencyContext.Provider
@@ -45,6 +84,12 @@ export const CurrencyProvider = ({ children }) => {
                 selectedCurrency,
                 setSelectedCurrency,
                 getCurrencies,
+
+                name,
+                setName,
+                amount,
+                setAmount,
+                updateCurrency
             }}
         >
             {children}

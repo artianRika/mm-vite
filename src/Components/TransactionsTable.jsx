@@ -1,55 +1,17 @@
 import * as React from 'react';
-import {
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer, TablePagination,
-    TableRow,
-} from '@mui/material';
-import {supabase} from "../../utils/supabase.js";
-import {useContext, useEffect, useState} from "react";
-import {CurrencyContext} from "@/Context/CurrencyContext.jsx";
+import {useContext, useEffect, useState} from 'react';
+import {Paper, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow,} from '@mui/material';
 import moment from "moment";
 import colors from "@/colors.js";
+import {TransactionsContext} from "@/Context/TransactionsContext.jsx";
 
 
-export default function TransactionsTable(props) {
+export default function TransactionsTable() {
 
-    const { selectedCurrency } = useContext(CurrencyContext)
-    const { fromDate, toDate } = props;
+    const { transactions } = useContext(TransactionsContext)
 
     const [rows, setRows] = useState([])
-    const [transactions, setTransactions] = useState({})
 
-    const getTransactions = async () => {
-        const {data, error} = await supabase
-            .from('Transactions')
-            .select(`
-                *,
-                Currencies (
-                  *,
-                  Users (
-                    *
-                  )
-                )
-              `)
-            .eq('currency_id', selectedCurrency.currency_id)
-            .eq('Currencies.user_id', '3bf91472-8ad5-4e00-aa6e-90f1b28ff841')
-            .gte('created_at', fromDate.toISOString())
-            .lte('created_at', toDate.clone().endOf('day').toISOString())
-            .order('created_at', { ascending: true });
-
-        if(error) {
-            console.log("error fetching the trans..")
-        }
-        else{
-            setTransactions(data)
-        }
-    }
-    useEffect(() => {
-        getTransactions()
-    }, [selectedCurrency, fromDate, toDate]);
 
     useEffect(() => {
         function createTransaction(date, name, amount, type) {
