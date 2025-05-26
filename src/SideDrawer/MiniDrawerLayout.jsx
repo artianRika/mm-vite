@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useContext} from 'react';
+import {useContext, useEffect} from 'react';
 import {useTheme} from '@mui/material/styles';
 import {
     Avatar,
@@ -29,6 +29,7 @@ import AddCurrencyDialog from "../Dialogs/AddCurrencyDialog.jsx";
 import {CurrencyContext} from "../Context/CurrencyContext.jsx";
 
 import {AppBar, Drawer, DrawerHeader} from './DrawerDependencies.jsx';
+import {UserContext} from "@/Context/UserContext.jsx";
 
 
 export default function MiniDrawerLayout() {
@@ -41,6 +42,7 @@ export default function MiniDrawerLayout() {
     const handleDrawerClose = () => setOpen(false);
 
     const { currencyList } = useContext(CurrencyContext);
+    const { user } = useContext(UserContext);
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -96,8 +98,7 @@ export default function MiniDrawerLayout() {
                                     minWidth: 0,
                                 }}
                             >
-                                Artian Rika
-                                {/*//TODO: get user Name*/}
+                                { `${user.first_name} ${user.last_name}` }
                             </Typography>
                         </Box>
                     )}

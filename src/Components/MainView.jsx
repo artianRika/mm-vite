@@ -9,25 +9,9 @@ import {TransactionsContext} from "@/Context/TransactionsContext.jsx";
 
 const MainView = () =>{
 
-    const [user, setUser] = useState({});
-
     const { currencyList } = useContext(CurrencyContext)
     const { fromDate, setFromDate, toDate, setToDate } = useContext(TransactionsContext)
 
-
-
-    async function fetchUser() {
-        const { data, error } = await supabase.auth.getUser();
-        if (error) {
-            console.error('Error fetching user:', error.message);
-        } else {
-            setUser(data.user);
-        }
-    }
-
-    useEffect(() => {
-        // fetchUser();
-    }, []);
 
     const listNotNull =
         currencyList.length > 0

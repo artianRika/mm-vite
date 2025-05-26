@@ -9,6 +9,7 @@ import Box from "@mui/material/Box";
 import {supabase} from "../../utils/supabase.js";
 import {useContext} from "react";
 import {CurrencyContext} from "../Context/CurrencyContext.jsx";
+import {UserContext} from "@/Context/UserContext.jsx";
 
 export default function AddCurrencyDialog(props) {
 
@@ -20,6 +21,7 @@ export default function AddCurrencyDialog(props) {
     const [currencyName, setCurrencyName] = React.useState("Savings...");
     const [amount, setAmount] = React.useState(0);
 
+    const { authUser } = useContext(UserContext)
 
     const addCurrency = async () => {
         if(currency !== "") {
@@ -27,7 +29,7 @@ export default function AddCurrencyDialog(props) {
                 .from('Currencies')
                 .insert([
                     {
-                        user_id: "3bf91472-8ad5-4e00-aa6e-90f1b28ff841",
+                        user_id: authUser.id,
                         amount: amount,
                         currency: currency,
                         currency_name: currencyName,

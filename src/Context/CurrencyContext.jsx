@@ -1,5 +1,6 @@
 import {supabase} from "../../utils/supabase.js";
-import {createContext, useEffect, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
+import {UserContext} from "@/Context/UserContext.jsx";
 
 export const CurrencyContext = createContext();
 
@@ -11,10 +12,14 @@ export const CurrencyProvider = ({ children }) => {
     const [name, setName] = useState(selectedCurrency.currency_name);
     const [amount, setAmount] = useState(selectedCurrency.amount);
 
+    const { authUser } = useContext(UserContext)
 
     useEffect(() => {
+        if (!authUser?.id) return; // <- guard clause
+
         getCurrencies()
-    }, [])
+        console.log("authuser iddd: ", authUser.id)
+    }, [authUser])
 
     useEffect(() => {
         if (selectedCurrency) {
@@ -25,7 +30,13 @@ export const CurrencyProvider = ({ children }) => {
 
 
     const getCurrencies = async (curr_id = null) => {
-        const { data, error } = await supabase.from("Currencies").select().order('currency_id', { ascending: true });
+
+
+        const { data, error } = await supabase
+            .from("Currencies")
+            .select()
+            .eq('user_id', authUser.id)
+            .order('currency_id', { ascending: true });
 
         if (error) {
             console.error('Error fetching currencies:', error);
