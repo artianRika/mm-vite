@@ -1,7 +1,6 @@
 import BalanceCard from "./BalanceCard.jsx";
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext} from "react";
 import {CurrencyContext} from "../Context/CurrencyContext.jsx";
-import {supabase} from "../../utils/supabase.js";
 import TransactionsTable from "./TransactionsTable.jsx";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import Button from "@mui/material/Button";

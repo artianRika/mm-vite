@@ -1,70 +1,88 @@
-import {createContext, useEffect, useState} from "react";
-import {supabase} from "../../utils/supabase.js";
-import {useNavigate} from "react-router-dom";
+import { createContext, useEffect, useState } from "react";
+import { supabase } from "../../utils/supabase.js";
+import { useNavigate } from "react-router-dom";
 
 export const UserContext = createContext();
 
-export const UserProvider = ( {children} ) => {
-
+export const UserProvider = ({ children }) => {
     const [authUser, setAuthUser] = useState(null);
-    const [user, setUser] = useState(null)
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
-    async function fetchAuthUser() {
-        const { data, error } = await supabase.auth.getUser();
-        if (error) {
-            console.error('Error fetching user:', error.message);
-        } else {
-            setAuthUser(data.user);
-        }
-    }
-
+    // Listen to auth state changes and update user
     useEffect(() => {
-        fetchAuthUser();
+        const getInitialSession = async () => {
+            const { data, error } = await supabase.auth.getSession();
+            if (data.session) {
+                setAuthUser(data.session.user);
+                localStorage.setItem("my_app_token", data.session.access_token);
+            }
+            setLoading(false);
+        };
+
+        getInitialSession();
+
+        const { data: listener } = supabase.auth.onAuthStateChange(
+            async (event, session) => {
+                if (session?.user) {
+                    setAuthUser(session.user);
+                    localStorage.setItem("my_app_token", session.access_token);
+                } else {
+                    setAuthUser(null);
+                    localStorage.removeItem("my_app_token");
+                }
+            }
+        );
+
+        return () => {
+            listener.subscription.unsubscribe();
+        };
     }, []);
 
-    const getUserData = async () => {
-        const {data, error} = await supabase
-            .from('Users')
-            .select('*')
-            .eq('user_id', authUser.id)
-            .maybeSingle()
-
-        if(error) {
-            console.log("error fetching user data for "+ authUser.id)
-        }
-        else{
-            console.log("Fetching user data for:", authUser.id);
-            setUser(data)
-        }
-    }
-
-
+    // Fetch user data from 'Users' table
     useEffect(() => {
-        if (authUser?.id) {
-            getUserData();
-        }
+        const fetchUserData = async () => {
+            if (!authUser?.id) return;
+
+            const { data, error } = await supabase
+                .from("Users")
+                .select("*")
+                .eq("user_id", authUser.id)
+                .maybeSingle();
+
+            if (!error) {
+                setUser(data);
+            }
+        };
+
+        fetchUserData();
     }, [authUser]);
 
     const signOut = async () => {
         await supabase.auth.signOut();
         setAuthUser(null);
         setUser(null);
-        navigate('/auth/login');
+        localStorage.removeItem("my_app_token");
+        navigate("/auth/login");
     };
 
-    return(
+    const isLoggedIn = () => {
+        return !!authUser;
+    };
+
+    return (
         <UserContext.Provider
             value={{
-                user,
                 authUser,
-                signOut
+                user,
+                isLoggedIn,
+                signOut,
+                loading
             }}
         >
-            { children }
+            {!loading && children}
         </UserContext.Provider>
-    )
-}
-
-//TODO: after login the authuser is null... if you refresh is ok but .. fix it
+    );
+};

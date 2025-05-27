@@ -1,26 +1,28 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import MiniDrawerLayout from './SideDrawer/MiniDrawerLayout.jsx';
 import {LogInPage} from './Auth/LogInPage.jsx'
-import {Routes, Route, Navigate} from "react-router-dom";
+import {Navigate, Route, Routes} from "react-router-dom";
 import {AuthLayout} from "@/Auth/AuthLayout.jsx";
 import {RegisterPage} from "@/Auth/RegisterPage.jsx";
+import {UserContext} from "./Context/UserContext.jsx";
 
 function App() {
+    const { isLoggedIn, loading } = useContext(UserContext);
 
+    if (loading) return null;
 
     return (
-            <Routes>
-                <Route path={'/auth'} element={<AuthLayout/>}>
-                    <Route index element={<Navigate to="login" replace />} />
+        <Routes>
+            <Route path="/auth" element={<AuthLayout />}>
+                <Route index element={<Navigate to="login" replace />} />
+                <Route path="login" element={isLoggedIn() ? <Navigate to="/" /> : <LogInPage />} />
+                <Route path="register" element={isLoggedIn() ? <Navigate to="/" /> : <RegisterPage />} />
+            </Route>
 
-                    <Route path={'login'} element={<LogInPage/>} />
-                    <Route path={'register'} element={<RegisterPage/>} />
-                </Route>
-
-                <Route path={'/'} element={<MiniDrawerLayout />} />
-
-            </Routes>
+            <Route path="/" element={!isLoggedIn() ? <Navigate to="/auth/login" /> : <MiniDrawerLayout />} />
+        </Routes>
     );
 }
+
 
 export default App;
