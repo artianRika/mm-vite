@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import { supabase } from "../../utils/supabase.js";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../Context/UserContext.jsx";
@@ -8,6 +8,12 @@ export const LogInPage = () => {
     const [password, setPassword] = useState("");
     const { isLoggedIn } = useContext(UserContext);
     const navigate = useNavigate();
+
+    const inputRef = useRef(null)
+
+    useEffect(() => {
+        inputRef.current.focus()
+    }, []);
 
     const handleSignIn = async (e) => {
         e.preventDefault();
@@ -20,7 +26,6 @@ export const LogInPage = () => {
         if (error) {
             console.error(error.message);
         } else {
-            // ✅ manually fetch session and store token if needed
             const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
             if (!sessionError && sessionData.session) {
@@ -32,11 +37,12 @@ export const LogInPage = () => {
         }
     };
 
-    // Optional: if user is already logged in, redirect
     if (isLoggedIn()) {
         navigate("/");
         return null;
     }
+
+
 
     return (
         <div className={"flex flex-col justify-center items-center flex-1"}>
@@ -47,6 +53,7 @@ export const LogInPage = () => {
                 <form onSubmit={handleSignIn} className="flex flex-col p-5 gap-4">
                     <input
                         type="email"
+                        ref={inputRef}
                         placeholder="Email"
                         className="p-3 rounded-md border border-gray-300"
                         value={email}

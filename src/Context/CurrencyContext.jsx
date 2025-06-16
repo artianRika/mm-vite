@@ -1,5 +1,5 @@
 import {supabase} from "../../utils/supabase.js";
-import {createContext, useContext, useEffect, useState} from "react";
+import {createContext, useCallback, useContext, useEffect, useState} from "react";
 import {UserContext} from "@/Context/UserContext.jsx";
 
 export const CurrencyContext = createContext();
@@ -15,7 +15,7 @@ export const CurrencyProvider = ({ children }) => {
     const { authUser } = useContext(UserContext)
 
     useEffect(() => {
-        if (!authUser?.id) return; // <- guard clause
+        if (!authUser?.id) return;
 
         getCurrencies()
         console.log("authuser iddd: ", authUser.id)
@@ -29,14 +29,13 @@ export const CurrencyProvider = ({ children }) => {
     }, [selectedCurrency]);
 
 
-    const getCurrencies = async (curr_id = null) => {
+    const getCurrencies = useCallback(async (curr_id = null) => {
 
-
-        const { data, error } = await supabase
+        const {data, error} = await supabase
             .from("Currencies")
             .select()
             .eq('user_id', authUser.id)
-            .order('currency_id', { ascending: true });
+            .order('currency_id', {ascending: true});
 
         if (error) {
             console.error('Error fetching currencies:', error);
@@ -49,7 +48,7 @@ export const CurrencyProvider = ({ children }) => {
                     if (index !== -1) {
                         setSelectedCurrency(data[index]);
                     }
-                    if(curr_id === "last"){
+                    if (curr_id === "last") {
                         setSelectedCurrency(data[data.length - 1])
                     }
                 } else {
@@ -57,7 +56,7 @@ export const CurrencyProvider = ({ children }) => {
                 }
             }
         }
-    };
+    }, [authUser]);
 
 
     const updateCurrency = async (transAmount = 0, transType=null) =>{

@@ -20,46 +20,37 @@ const MainView = () =>{
             <div>
                 { listNotNull && <BalanceCard/> }
             </div>
-            <div className={"mt-20 px-17 w-[70%] self-center"}>
 
-                <div className={"flex flex-row items-center"}>
-                    <div className={"flex gap-2"}>
-                        <DatePicker
-                            sx={{
-                                width: "10vw"
-                            }}
-                            label="From"
-                            value={fromDate}
-                            onChange={(newValue) => setFromDate(newValue)}
-                        />
-                        <DatePicker
-                            sx={{
-                                width: "10vw"
-                            }}
-                            label="То"
-                            value={toDate}
-                            onChange={(newValue) => {
-                                if (newValue && fromDate && newValue.isSameOrAfter(fromDate)) {
-                                    setToDate(newValue);
-                                }
-                            }}
-                        />
-                    </div>
-                    <div className={"ml-auto"}>
-                        <Button variant="outlined"
+            {listNotNull &&
+                <div className={"mt-20 px-17 w-[70%] self-center"}>
+                    <div className={"flex flex-row items-center"}>
+                        <div className={"flex gap-2"}>
+                            <DatePicker
                                 sx={{
-                                    color: "#000",
-                                    border: `1px solid black`,
-                                    fontSize: ".8rem",
+                                    width: "10vw"
                                 }}
-                        >
-                            Export
-                        </Button>
+                                label="From"
+                                value={fromDate}
+                                onChange={(newValue) => setFromDate(newValue)}
+                            />
+                            <DatePicker
+                                sx={{
+                                    width: "10vw"
+                                }}
+                                label="То"
+                                value={toDate}
+                                onChange={(newValue) => {
+                                    if (newValue && fromDate && newValue.isSameOrAfter(fromDate)) {
+                                        setToDate(newValue);
+                                    }
+                                }}
+                            />
+                        </div>
                     </div>
-                </div>
 
                     <TransactionsTable fromDate={fromDate} toDate={toDate}/>
-            </div>
+                </div>
+            }
         </div>
     );
 }

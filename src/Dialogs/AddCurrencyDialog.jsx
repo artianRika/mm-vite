@@ -88,14 +88,14 @@ export default function AddCurrencyDialog(props) {
                     <TextField
                         id="outlined-uncontrolled"
                         label="Name"
-                        defaultValue={currencyName}
+                        value={currencyName}
                         onChange={e => setCurrencyName(e.target.value)}
                     />
 
                     <TextField
                         id="outlined-uncontrolled"
                         label="Amount"
-                        defaultValue={amount}
+                        value={amount}
                         onChange={e => setAmount(Number(e.target.value))}
                     />
                 </Box>

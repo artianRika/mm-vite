@@ -165,7 +165,6 @@ export default function MiniDrawerLayout() {
                         zIndex: 1000,
                     }}
                 >
-                    <ControlButton text="Options" open={open} />
                     <ControlButton text="Logout" open={open} onClick={() => setSignOutAlertOpen(true)} />
                     <LogoutDialog alertOpen={signOutAlertOpen} onAlertClose={() => setSignOutAlertOpen(false)} />
                 </List>

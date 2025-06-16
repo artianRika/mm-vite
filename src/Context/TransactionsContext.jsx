@@ -1,20 +1,23 @@
-import React, {createContext, useContext, useEffect, useState} from "react";
+import React, {createContext, useCallback, useContext, useEffect, useState} from "react";
 import {supabase} from "../../utils/supabase.js";
 import {CurrencyContext} from "@/Context/CurrencyContext.jsx";
 import moment from "moment/moment.js";
+import {UserContext} from "@/Context/UserContext.jsx";
 
 export const TransactionsContext = createContext();
 
 export const TransactionsProvider = ({children}) =>{
 
-    const { selectedCurrency } = useContext(CurrencyContext)
+    const { authUser } = useContext(UserContext);
+    const { selectedCurrency, currencyList } = useContext(CurrencyContext)
+
     const [transactions, setTransactions] = useState({})
 
     const [fromDate, setFromDate] = React.useState(moment().startOf('month'));
     const [toDate, setToDate] = React.useState(moment());
 
 
-    const getTransactions = async () => {
+    const getTransactions = useCallback(async () => {
         const {data, error} = await supabase
             .from('Transactions')
             .select(`
@@ -27,7 +30,7 @@ export const TransactionsProvider = ({children}) =>{
                 )
               `)
             .eq('currency_id', selectedCurrency.currency_id)
-            .eq('Currencies.user_id', '3bf91472-8ad5-4e00-aa6e-90f1b28ff841')
+            .eq('Currencies.user_id', authUser?.id)
             .gte('created_at', fromDate.toISOString())
             .lte('created_at', toDate.clone().endOf('day').toISOString())
             .order('created_at', { ascending: false });
@@ -38,10 +41,11 @@ export const TransactionsProvider = ({children}) =>{
         else{
             setTransactions(data)
         }
-    }
+    }, [selectedCurrency.currency_id, authUser?.id, fromDate, toDate])
+
     useEffect(() => {
         getTransactions()
-    }, [selectedCurrency, fromDate, toDate]);
+    }, [selectedCurrency, fromDate, toDate, currencyList]);
 
     return(
         <TransactionsContext.Provider

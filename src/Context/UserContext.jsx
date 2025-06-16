@@ -11,7 +11,6 @@ export const UserProvider = ({ children }) => {
 
     const navigate = useNavigate();
 
-    // Listen to auth state changes and update user
     useEffect(() => {
         const getInitialSession = async () => {
             const { data, error } = await supabase.auth.getSession();
