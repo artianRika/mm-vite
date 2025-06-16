@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useContext, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -12,6 +12,7 @@ import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import {supabase} from "../../utils/supabase.js";
 import {CurrencyContext} from "@/Context/CurrencyContext.jsx";
 import {TransactionsContext} from "@/Context/TransactionsContext.jsx";
+import {useNavigate} from "react-router-dom";
 
 export default function AddTransactionDialog(props) {
 
@@ -24,6 +25,11 @@ export default function AddTransactionDialog(props) {
     const { selectedCurrency, updateCurrency } = useContext(CurrencyContext)
     const { getTransactions } = useContext(TransactionsContext)
 
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        navigate(`/${selectedCurrency.currency_id}`)
+    }, [selectedCurrency]);
 
     const addTransaction = async () => {
         if(description !== "") {
@@ -43,12 +49,13 @@ export default function AddTransactionDialog(props) {
                 console.error('Transaction insert error:', error)
             } else {
                 console.log('Transaction inserted')
-                getTransactions();
+                // getTransactions();
                 addTransactionAlertClose();
                 setDescription("");
                 setDate(moment())
                 updateCurrency(amount, type);
                 setAmount(0);
+                console.log("dataaaa", data)
             }
         }
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useContext, useEffect} from 'react';
+import {useContext} from 'react';
 import {useTheme} from '@mui/material/styles';
 import {
     Avatar,
@@ -30,6 +30,8 @@ import {CurrencyContext} from "../Context/CurrencyContext.jsx";
 
 import {AppBar, Drawer, DrawerHeader} from './DrawerDependencies.jsx';
 import {UserContext} from "@/Context/UserContext.jsx";
+
+import { Outlet } from 'react-router-dom';
 
 
 export default function MiniDrawerLayout() {
@@ -172,7 +174,9 @@ export default function MiniDrawerLayout() {
 
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
-                <MainView />
+
+                <Outlet/>
+                {/*<MainView />*/}
             </Box>
         </Box>
     );

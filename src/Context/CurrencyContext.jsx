@@ -1,24 +1,29 @@
 import {supabase} from "../../utils/supabase.js";
 import {createContext, useCallback, useContext, useEffect, useState} from "react";
 import {UserContext} from "@/Context/UserContext.jsx";
+import {useNavigate} from "react-router-dom";
 
 export const CurrencyContext = createContext();
 
+
+
+
 export const CurrencyProvider = ({ children }) => {
+
+    const { authUser } = useContext(UserContext)
 
     const [currencyList, setCurrencyList] = useState([]);
     const [selectedCurrency, setSelectedCurrency] = useState({});
 
-    const [name, setName] = useState(selectedCurrency.currency_name);
-    const [amount, setAmount] = useState(selectedCurrency.amount);
+    const [name, setName] = useState(selectedCurrency.currency_name || "Name");
+    const [amount, setAmount] = useState(selectedCurrency.amount || "Amount");
 
-    const { authUser } = useContext(UserContext)
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (!authUser?.id) return;
 
         getCurrencies()
-        console.log("authuser iddd: ", authUser.id)
     }, [authUser])
 
     useEffect(() => {
@@ -52,12 +57,33 @@ export const CurrencyProvider = ({ children }) => {
                         setSelectedCurrency(data[data.length - 1])
                     }
                 } else {
-                    setSelectedCurrency(data[0]);
+                    console.log("selected currency null")
                 }
             }
         }
     }, [authUser]);
 
+    const getCurrencyById = async (currencyId) => {
+
+        const {data, error} = await supabase
+            .from("Currencies")
+            .select()
+            .eq('user_id', authUser.id)
+            .eq('currency_id', currencyId)
+
+        if (error) {
+            console.error('Error fetching currency with id:', currencyId, error);
+            navigate('/')
+        } else {
+            if (data.length > 0){
+                setSelectedCurrency(data[0]);
+            }
+            else{
+                console.log("setting selected currency null")
+                navigate('/')
+            }
+        }
+    };
 
     const updateCurrency = async (transAmount = 0, transType=null) =>{
         let newAmount = amount;
@@ -94,6 +120,7 @@ export const CurrencyProvider = ({ children }) => {
                 selectedCurrency,
                 setSelectedCurrency,
                 getCurrencies,
+                getCurrencyById,
 
                 name,
                 setName,

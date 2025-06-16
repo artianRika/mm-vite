@@ -18,9 +18,10 @@ export const TransactionsProvider = ({children}) =>{
 
 
     const getTransactions = useCallback(async () => {
-        const {data, error} = await supabase
-            .from('Transactions')
-            .select(`
+        if (selectedCurrency.currency_id) {
+            const {data, error} = await supabase
+                .from('Transactions')
+                .select(`
                 *,
                 Currencies (
                   *,
@@ -29,17 +30,18 @@ export const TransactionsProvider = ({children}) =>{
                   )
                 )
               `)
-            .eq('currency_id', selectedCurrency.currency_id)
-            .eq('Currencies.user_id', authUser?.id)
-            .gte('created_at', fromDate.toISOString())
-            .lte('created_at', toDate.clone().endOf('day').toISOString())
-            .order('created_at', { ascending: false });
+                .eq('currency_id', selectedCurrency.currency_id)
+                .eq('Currencies.user_id', authUser?.id)
+                .gte('created_at', fromDate.toISOString())
+                .lte('created_at', toDate.clone().endOf('day').toISOString())
+                .order('created_at', {ascending: false});
 
-        if(error) {
-            console.log("error fetching the trans..")
-        }
-        else{
-            setTransactions(data)
+            if (error) {
+                console.log(selectedCurrency.currency_id)
+                console.log("error fetching the trans..", error)
+            } else {
+                setTransactions(data)
+            }
         }
     }, [selectedCurrency.currency_id, authUser?.id, fromDate, toDate])
 

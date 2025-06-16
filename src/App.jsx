@@ -5,6 +5,7 @@ import {Navigate, Route, Routes} from "react-router-dom";
 import {AuthLayout} from "@/Auth/AuthLayout.jsx";
 import {RegisterPage} from "@/Auth/RegisterPage.jsx";
 import {UserContext} from "./Context/UserContext.jsx";
+import MainView from "@/Components/MainView.jsx";
 
 function App() {
     const { isLoggedIn, loading } = useContext(UserContext);
@@ -19,7 +20,9 @@ function App() {
                 <Route path="register" element={isLoggedIn() ? <Navigate to="/" /> : <RegisterPage />} />
             </Route>
 
-            <Route path="/" element={!isLoggedIn() ? <Navigate to="/auth/login" /> : <MiniDrawerLayout />} />
+            <Route path="/" element={!isLoggedIn() ? <Navigate to="/auth/login" /> : <MiniDrawerLayout />} >
+                <Route path=":id" element={<MainView/>}/>
+            </Route>
         </Routes>
     );
 }

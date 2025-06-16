@@ -7,12 +7,14 @@ import colors from "../colors.js";
 import {supabase} from "../../utils/supabase.js";
 import {useContext} from "react";
 import {CurrencyContext} from "../Context/CurrencyContext.jsx";
+import {useNavigate} from "react-router-dom";
 
 export default function DeleteCurrencyDialog(props) {
 
     const { alertOpen, onAlertClose, currencyToDelete } = props;
     const { getCurrencies } = useContext(CurrencyContext)
 
+    const navigate = useNavigate()
 
     const handleDelete = async () => {
         if (!currencyToDelete) return;
@@ -25,7 +27,7 @@ export default function DeleteCurrencyDialog(props) {
         if (error) {
             console.error('Error deleting currency:', error.message);
         } else {
-            await getCurrencies();
+            await getCurrencies("last");
         }
 
         onAlertClose();

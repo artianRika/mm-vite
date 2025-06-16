@@ -1,12 +1,22 @@
 import BalanceCard from "./BalanceCard.jsx";
-import React, {useContext} from "react";
+import React, {useContext, useEffect} from "react";
 import {CurrencyContext} from "../Context/CurrencyContext.jsx";
 import TransactionsTable from "./TransactionsTable.jsx";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import Button from "@mui/material/Button";
 import {TransactionsContext} from "@/Context/TransactionsContext.jsx";
+import {useParams} from "react-router-dom";
 
 const MainView = () =>{
+
+    const { id } = useParams();
+    const {getCurrencyById} = useContext(CurrencyContext);
+
+    useEffect(() => {
+        if(id){
+            getCurrencyById(id)
+        }
+    }, []);
 
     const { currencyList } = useContext(CurrencyContext)
     const { fromDate, setFromDate, toDate, setToDate } = useContext(TransactionsContext)

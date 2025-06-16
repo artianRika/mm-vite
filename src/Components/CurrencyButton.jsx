@@ -9,6 +9,7 @@ import * as React from "react";
 import DeleteCurrencyDialog from "../Dialogs/DeleteCurrencyDialog.jsx";
 import {useContext} from "react";
 import {CurrencyContext} from "../Context/CurrencyContext.jsx";
+import {useNavigate} from "react-router-dom";
 
 const CurrencyButton = (props) =>{
 
@@ -18,6 +19,7 @@ const CurrencyButton = (props) =>{
     const [deleteAlertOpen, setDeleteAlertOpen] = React.useState(false);
     const [currencyToDelete, setCurrencyToDelete] = React.useState(null);
 
+    const navigate = useNavigate()
 
     function getCurrencyPath(currency) {
         switch (currency){
@@ -53,7 +55,11 @@ const CurrencyButton = (props) =>{
                       backgroundColor: colors.primary,
                   },
               }}
-              onClick={() => setSelectedCurrency(currencyObj)}
+              onClick={() => {
+                  setSelectedCurrency(currencyObj)
+                  navigate(`/${currencyObj.currency_id}`)
+                }
+            }
           >
               <ListItemIcon sx={{ minWidth: 0, justifyContent: "center", mr: props.open ? 3 : "auto" }}>
                   <Box
