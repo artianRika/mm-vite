@@ -20,6 +20,7 @@ function App() {
                 <Route path="register" element={isLoggedIn() ? <Navigate to="/" /> : <RegisterPage />} />
             </Route>
 
+
             <Route path="/" element={!isLoggedIn() ? <Navigate to="/auth/login" /> : <MiniDrawerLayout />} >
                 <Route path=":id" element={<MainView/>}/>
             </Route>
